@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #050608;
+    color: #F2F2F2;
+    font-family: var(--font-geist-sans), sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.cinematic-glow {
+  background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.14) 0%, transparent 60%),
+              radial-gradient(circle at 80% 70%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
+              #050608;
+}
+
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: scale(1.02);
+  filter: brightness(1.15);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050608;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
