@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "./components/LanguageProvider";
@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "PAULO SILVA — PORTFÓLIO 2025 | Videomaker & Editor",
   description: "Portfólio profissional de Paulo Silva, videomaker e editor de conteúdo especializado em narrativa visual, edição cinematográfica e conteúdo digital.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

@@ -183,10 +183,10 @@ export default function PortfolioApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050608] text-[#F2F2F2] cinematic-glow flex flex-col items-center py-10 px-4 md:px-8 overflow-hidden">
+    <div className="min-h-screen bg-[#050608] text-[#F2F2F2] cinematic-glow flex flex-col items-center py-10 px-4 md:px-8 overflow-x-clip">
       
       {/* AMBIENT BACKGROUND GLOWS */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-red-600/10 blur-[150px] pointer-events-none rounded-full"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[400px] bg-red-600/10 blur-[150px] pointer-events-none rounded-full"></div>
 
       {/* MAIN CONTAINER */}
       <div className="w-full max-w-[1100px] flex flex-col gap-24 relative z-10">
