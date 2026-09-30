@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from "react";
-import { Play, X, Camera, Globe, Mail, ExternalLink, Share2, Video, ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { Play, X, ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
+import { useLanguage } from "./components/LanguageProvider";
 import { EquipmentSection } from "./components/Equipment";
 
 const InstagramIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
@@ -24,23 +25,41 @@ const InstagramIcon = ({ size = 16, className = "" }: { size?: number; className
   </svg>
 );
 
+const WhatsAppIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>
+);
+
 export default function PortfolioApp() {
+  const { lang, t, toggleLang } = useLanguage();
   const [activeModalProject, setActiveModalProject] = useState<any | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const mobileTrackRef = useRef<HTMLDivElement>(null);
+  const currentIndexRef = useRef(0);
 
   // State for Interactive 3D Tool Cards in Profile (Physical Stack with exiting animation state)
   const [toolCards, setToolCards] = useState([
-    { id: 1, name: "PREMIERE PRO", role: "VIDEO EDITING", color: "#3B82F6" },
-    { id: 2, name: "AFTER EFFECTS", role: "MOTION DESIGN", color: "#8B5CF6" },
-    { id: 3, name: "DAVINCI RESOLVE", role: "COLOR GRADING", color: "#10B981" },
-    { id: 4, name: "PHOTOSHOP", role: "VISUAL ASSETS", color: "#06B6D4" },
-    { id: 5, name: "ILLUSTRATOR", role: "VECTOR DESIGN", color: "#F59E0B" },
-    { id: 6, name: "CAPCUT PRO", role: "SOCIAL EDITING", color: "#EC4899" },
+    { id: 1, key: "davinci", color: "#10B981" },
+    { id: 2, key: "afterEffects", color: "#8B5CF6" },
+    { id: 3, key: "premiere", color: "#3B82F6" },
+    { id: 4, key: "chatgpt", color: "#22D3EE" },
+    { id: 5, key: "kling", color: "#EF4444" },
   ]);
+  const toolMeta = (key: string) => {
+    const m = t.tools[key as keyof typeof t.tools];
+    return m ? { name: m.name, role: m.role } : { name: key.toUpperCase(), role: "" };
+  };
   const [isStackAnimating, setIsStackAnimating] = useState(false);
   const [exitingCardId, setExitingCardId] = useState<number | null>(null);
   const [exitDirection, setExitDirection] = useState<number>(1); // 1 = right, -1 = left
@@ -70,40 +89,14 @@ export default function PortfolioApp() {
     }, 660);
   };
 
-  const projects = [
-    {
-      id: "01",
-      title: "PROJECT 01",
-      category: "COMMERCIAL / 4K",
-      thumbnail: "/imagens/Projeto 01.png",
-      videoUrl: "/videos/projeto-01.mp4",
-      desc: "Cinematic commercial featuring dynamic camera pacing and professional color grading."
-    },
-    {
-      id: "02",
-      title: "PROJECT 02",
-      category: "MOTION DESIGN",
-      thumbnail: "/imagens/Projeto 02.png",
-      videoUrl: "/videos/projeto-02.mp4",
-      desc: "Atmospheric edit with intense sound design and custom visual effects overlays."
-    },
-    {
-      id: "03",
-      title: "PROJECT 03",
-      category: "SHORT FORM / TIKTOK",
-      thumbnail: "/imagens/Projeto 03.png",
-      videoUrl: "/videos/projeto-03.mp4",
-      desc: "High-retention vertical edits designed for social media and short form platforms."
-    },
-    {
-      id: "04",
-      title: "PROJECT 04",
-      category: "DOCUMENTARY",
-      thumbnail: "/imagens/Projeto 04.png",
-      videoUrl: "/videos/projeto-04.mp4",
-      desc: "Raw storytelling capturing authentic human moments and cinematic lighting."
-    }
-  ];
+  const projects = t.projects.projects.map((p, i) => ({
+    id: String(i + 1).padStart(2, "0"),
+    title: p.title,
+    category: p.category,
+    thumbnail: `/imagens/Projeto 0${i + 1}.png`,
+    videoUrl: `/videos/projeto-0${i + 1}.mp4`,
+    desc: p.desc,
+  }));
 
   // Cinematic scroll-driven motion for Hero
   const { scrollY } = useScroll();
@@ -129,8 +122,50 @@ export default function PortfolioApp() {
     if (isAnimating) return;
     setIsAnimating(true);
     setDirection(dir);
-    setCurrentIndex((prev) => (prev + dir + projects.length) % projects.length);
+    const next = (currentIndexRef.current + dir + projects.length) % projects.length;
+    currentIndexRef.current = next;
+    setCurrentIndex(next);
+    scrollMobileTo(next);
     setTimeout(() => setIsAnimating(false), 650);
+  };
+
+  /** Programmatically center the mobile swipe track on a given project. */
+  const scrollMobileTo = (index: number) => {
+    const track = mobileTrackRef.current;
+    if (!track || track.clientWidth === 0) return;
+    const child = track.children[index] as HTMLElement | undefined;
+    if (!child) return;
+    const trackRect = track.getBoundingClientRect();
+    const childRect = child.getBoundingClientRect();
+    const targetLeft =
+      track.scrollLeft +
+      (childRect.left - trackRect.left) -
+      (track.clientWidth - childRect.width) / 2;
+    track.scrollTo({ left: targetLeft, behavior: "smooth" });
+  };
+
+  /** Sync currentIndex from the mobile swipe track's scroll position. */
+  const handleMobileScroll = () => {
+    const track = mobileTrackRef.current;
+    if (!track || track.clientWidth === 0) return;
+    const trackRect = track.getBoundingClientRect();
+    const centerX = trackRect.left + track.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    Array.from(track.children).forEach((child, i) => {
+      const el = child as HTMLElement;
+      const r = el.getBoundingClientRect();
+      const c = r.left + r.width / 2;
+      const d = Math.abs(c - centerX);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    });
+    if (best !== currentIndex && best >= 0 && best < projects.length) {
+      currentIndexRef.current = best;
+      setCurrentIndex(best);
+    }
   };
 
   React.useEffect(() => {
@@ -141,6 +176,7 @@ export default function PortfolioApp() {
       if (target && ["INPUT", "TEXTAREA", "VIDEO", "BUTTON"].includes(target.tagName)) return;
       if (e.key === "ArrowLeft") goToProject(-1);
       if (e.key === "ArrowRight") goToProject(1);
+      if (e.key === "Escape") setActiveModalProject(null);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -177,13 +213,26 @@ export default function PortfolioApp() {
               <span className="inline-block w-3 h-3 bg-red-600 rounded-sm animate-pulse"></span>
               PS
             </motion.div>
+
+            {/* Language Toggle — PT / EN */}
             <motion.div 
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.5 }}
-              className="text-xs uppercase tracking-widest text-[#8A8F96] font-mono"
+              className="flex items-center gap-3"
             >
-              CINEMATIC PORTFOLIO BOOK
+              <span className="text-xs uppercase tracking-widest text-[#8A8F96] font-mono hidden sm:block">
+                {t.hero.brand}
+              </span>
+              <button
+                onClick={toggleLang}
+                aria-label={lang === "pt" ? "Switch to English" : "Mudar para Português"}
+                className="flex items-center gap-1 border border-red-500/40 rounded-full px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest bg-[#111827]/80 backdrop-blur cursor-pointer hover:border-red-500 hover:bg-red-950/40 transition-colors"
+              >
+                <span className={lang === "pt" ? "text-red-400 font-bold" : "text-[#8A8F96] hover:text-white"}>PT</span>
+                <span className="text-[#8A8F96]">/</span>
+                <span className={lang === "en" ? "text-red-400 font-bold" : "text-[#8A8F96] hover:text-white"}>EN</span>
+              </button>
             </motion.div>
           </div>
 
@@ -221,7 +270,7 @@ export default function PortfolioApp() {
                 className="flex items-baseline gap-4 flex-wrap"
               >
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase font-mono bg-gradient-to-r from-white via-gray-200 to-red-400 bg-clip-text text-transparent drop-shadow-lg">
-                  PORTFOLIO
+                  {t.hero.title}
                 </h1>
                 <motion.span 
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -239,7 +288,7 @@ export default function PortfolioApp() {
                 transition={{ delay: 0.75, duration: 0.5 }}
                 className="mt-4 inline-block bg-[#111827] border border-red-500/40 px-4 py-1.5 text-xs uppercase tracking-widest text-red-300 w-fit rounded shadow-inner"
               >
-                ■ CONTENT CREATOR & VIDEO EDITOR
+                {t.hero.tagline}
               </motion.div>
 
               {/* Minimalist Vertical Navigation with sequential stagger */}
@@ -249,10 +298,14 @@ export default function PortfolioApp() {
                 transition={{ delay: 0.85, duration: 0.6 }}
                 className="mt-10 flex flex-col gap-3 text-sm tracking-widest uppercase text-[#8A8F96]"
               >
-                {['start', 'projects', 'contact'].map((item, i) => (
+                {[
+                  { id: 'start', label: t.hero.navStart },
+                  { id: 'projects', label: t.hero.navProjects },
+                  { id: 'contact', label: t.hero.navContact },
+                ].map((item, i) => (
                   <motion.a 
-                    key={item}
-                    href={`#${item}`}
+                    key={item.id}
+                    href={`#${item.id}`}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.9 + (i * 0.08), duration: 0.4 }}
@@ -260,7 +313,7 @@ export default function PortfolioApp() {
                     className="flex items-center gap-3 group w-fit cursor-pointer"
                   >
                     <span className="w-2 h-2 bg-red-500 rounded-full group-hover:scale-150 group-hover:bg-red-500 transition duration-300"></span>
-                    <span className="font-mono">{item.toUpperCase()}</span>
+                    <span className="font-mono">{item.label}</span>
                   </motion.a>
                 ))}
               </motion.div>
@@ -284,11 +337,11 @@ export default function PortfolioApp() {
           <div className="flex justify-between items-center mb-10 border-b border-[#1e293b]/50 pb-4">
             <div className="text-xs uppercase tracking-widest text-red-400 font-semibold flex items-center gap-2 font-mono">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-              PROFILE
+              {t.profile.label}
             </div>
             <div className="flex gap-6 text-xs uppercase tracking-widest text-[#8A8F96] font-mono">
-              <a href="#projects" className="hover:text-white transition">PROJECT</a>
-              <a href="#contact" className="hover:text-white transition">CONTACT PERSON</a>
+              <a href="#projects" className="hover:text-white transition">{t.profile.projectTab}</a>
+              <a href="#contact" className="hover:text-white transition">{t.profile.contactTab}</a>
             </div>
           </div>
 
@@ -302,7 +355,7 @@ export default function PortfolioApp() {
               <div className="relative w-full max-w-[300px] aspect-[3/4] overflow-hidden rounded-xl border border-red-500/20 shadow-xl bg-black">
                 <img 
                   src="/imagens/Imagem da Seção.png" 
-                  alt="Paulo Silva Profile" 
+                  alt={`${t.profile.hello} ${t.contact.name}`}
                   className="w-full h-full object-cover filter contrast-110 hover:scale-105 transition duration-700"
                 />
               </div>
@@ -311,43 +364,27 @@ export default function PortfolioApp() {
             {/* Right side: Bio & Skills */}
             <div className="md:col-span-7 flex flex-col gap-6">
               <div>
-                <p className="text-xs uppercase tracking-widest text-[#8A8F96] mb-1 font-mono">HELLO, I AM</p>
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-2 font-mono">PAULO SILVA</h2>
-                <h3 className="text-xl font-black uppercase text-red-400 tracking-wider mb-4 font-mono">ABOUT ME</h3>
+                <p className="text-xs uppercase tracking-widest text-[#8A8F96] mb-1 font-mono">{t.profile.hello}</p>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-2 font-mono">{t.contact.name}</h2>
+                <h3 className="text-xl font-black uppercase text-red-400 tracking-wider mb-4 font-mono">{t.profile.aboutMe}</h3>
                 <p className="text-sm text-[#8A8F96] leading-relaxed">
-                  Hi, I'm Paulo Silva, a video editor focused on visual storytelling, cinematic editing, and digital content. I transform raw footage into high-impact videos with rhythm, identity, and purpose.
+                  {t.profile.bio}
                 </p>
               </div>
 
               {/* Software Skills */}
               <div>
-                <h4 className="text-xs uppercase tracking-widest text-white mb-3 font-semibold font-mono">SOFTWARE SKILLS</h4>
+                <h4 className="text-xs uppercase tracking-widest text-white mb-3 font-semibold font-mono">{t.profile.softwareSkills}</h4>
                 <div className="flex flex-wrap gap-3">
-                  {['Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Photoshop', 'Illustrator', 'CapCut Pro'].map((skill, index) => (
+                  {Object.values(t.tools).map((skill, index) => (
                     <motion.div 
-                      key={skill}
+                      key={skill.name}
                       whileHover={{ scale: 1.08, y: -3 }}
                       className="bg-[#111827] border border-red-900/50 px-3.5 py-2 rounded-lg text-xs font-mono text-red-300 flex items-center gap-2 cursor-pointer shadow-md hover:border-red-500 transition"
                     >
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> {skill}
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> {skill.name}
                     </motion.div>
                   ))}
-                </div>
-              </div>
-
-              {/* Education & Experience & Language */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#1e293b]/50">
-                <div>
-                  <h5 className="text-xs uppercase tracking-widest text-white font-semibold mb-1 font-mono">EDUCATION</h5>
-                  <p className="text-xs text-[#8A8F96] font-mono">● 2018 - 2022</p>
-                  <p className="text-xs text-gray-300 font-semibold">UNIVERSIDADE DE SÃO PAULO</p>
-                  <p className="text-xs text-[#8A8F96]">Audiovisual & Cinema</p>
-                </div>
-                <div>
-                  <h5 className="text-xs uppercase tracking-widest text-white font-semibold mb-1 font-mono">EXPERIENCE</h5>
-                  <p className="text-xs text-red-400 font-mono">SENIOR VIDEO EDITOR</p>
-                  <p className="text-xs text-[#8A8F96]">Commercial & Social Media Campaigns</p>
-                  <p className="text-xs text-gray-300 font-semibold">Over 50M+ total views generated</p>
                 </div>
               </div>
 
@@ -359,16 +396,17 @@ export default function PortfolioApp() {
         {isHydrated && (
           <div className="hidden xl:block absolute -left-28 -bottom-16 z-45">
             <div className="flex flex-col items-start gap-2 mb-2">
-              <span className="text-[10px] uppercase tracking-widest text-[#8A8F96] font-mono">TOOL STACK</span>
+              <span className="text-[10px] uppercase tracking-widest text-[#8A8F96] font-mono">{t.profile.toolStack}</span>
             </div>
             <div 
               className="relative w-[280px] h-[190px] cursor-pointer select-none group"
               style={{ perspective: "1000px", transform: "rotate(-1.5deg)" }}
               onClick={handleRotateToolCards}
-              title="Click to manipulate card stack"
+              title={t.profile.clickToDisplace}
             >
               <div className="absolute inset-0 w-full h-full transform-gpu" style={{ transformStyle: "preserve-3d" }}>
                 {toolCards.map((tool, idx) => {
+                  const meta = toolMeta(tool.key);
                   const isFront = idx === 0;
                   const isExiting = tool.id === exitingCardId;
 
@@ -420,15 +458,15 @@ export default function PortfolioApp() {
                     >
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-[10px] font-mono tracking-widest text-[#8A8F96]">TOOL NO. {String(idx + 1).padStart(2, '0')}</span>
+                          <span className="text-[10px] font-mono tracking-widest text-[#8A8F96]">{t.profile.toolNo} {String(idx + 1).padStart(2, '0')}</span>
                           <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: tool.color }}></span>
                         </div>
-                        <h4 className="text-base font-black uppercase tracking-tight text-white font-mono">{tool.name}</h4>
+                        <h4 className="text-base font-black uppercase tracking-tight text-white font-mono">{meta.name}</h4>
                       </div>
                       <div className="flex justify-between items-end border-t border-[#1e293b]/40 pt-2">
-                        <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">{tool.role}</span>
+                        <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">{meta.role}</span>
                         <span className="text-[10px] font-mono text-[#8A8F96] group-hover:text-white transition flex items-center gap-1">
-                          {isFront && !isExiting ? "CLICK TO DISPLACE ➔" : `STACK (${idx + 1})`}
+                          {isFront && !isExiting ? `${t.profile.clickToDisplace} ➔` : `${t.profile.stack} (${idx + 1})`}
                         </span>
                       </div>
                     </motion.div>
@@ -442,17 +480,18 @@ export default function PortfolioApp() {
         {/* Mobile / Tablet fallback stack */}
         <div className="block xl:hidden mt-4 pt-6 border-t border-[#1e293b]/50">
           <div className="flex flex-col gap-2 mb-4">
-            <h5 className="text-[11px] uppercase tracking-widest text-[#8A8F96] font-mono">INTERACTIVE TOOL STACK</h5>
-            <p className="text-xs text-red-400 font-mono">CLICK CARD TO MANIPULATE STACK</p>
+            <h5 className="text-[11px] uppercase tracking-widest text-[#8A8F96] font-mono">{t.profile.toolStackMobileTitle}</h5>
+            <p className="text-xs text-red-400 font-mono">{t.profile.toolStackMobileHint}</p>
           </div>
           <div 
             className="relative w-[280px] h-[180px] mx-auto cursor-pointer select-none group"
             style={{ perspective: "1000px" }}
             onClick={handleRotateToolCards}
-            title="Click to manipulate card stack"
+            title={t.profile.clickToRotate}
           >
             <div className="absolute inset-0 w-full h-full transform-gpu" style={{ transformStyle: "preserve-3d" }}>
               {toolCards.map((tool, idx) => {
+                const meta = toolMeta(tool.key);
                 const isFront = idx === 0;
                 const isExiting = tool.id === exitingCardId;
 
@@ -501,14 +540,14 @@ export default function PortfolioApp() {
                   >
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] font-mono tracking-widest text-[#8A8F96]">TOOL NO. {String(idx + 1).padStart(2, '0')}</span>
+                        <span className="text-[10px] font-mono tracking-widest text-[#8A8F96]">{t.profile.toolNo} {String(idx + 1).padStart(2, '0')}</span>
                         <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: tool.color }}></span>
                       </div>
-                      <h4 className="text-base font-black uppercase tracking-tight text-white font-mono">{tool.name}</h4>
+                      <h4 className="text-base font-black uppercase tracking-tight text-white font-mono">{meta.name}</h4>
                     </div>
                     <div className="flex justify-between items-end border-t border-[#1e293b]/40 pt-2">
-                      <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">{tool.role}</span>
-                      <span className="text-[10px] font-mono text-[#8A8F96]">CLICK TO ROTATE</span>
+                      <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">{meta.role}</span>
+                      <span className="text-[10px] font-mono text-[#8A8F96]">{t.profile.clickToRotate}</span>
                     </div>
                   </motion.div>
                 );
@@ -555,30 +594,30 @@ export default function PortfolioApp() {
           {/* Top mini tabs */}
           <div className="relative z-10 flex justify-between items-center border-b border-[#1e293b]/50 px-6 md:px-12 pt-6 pb-4">
             <div className="flex gap-6 text-xs uppercase tracking-widest text-[#8A8F96] font-mono">
-              <a href="#about" className="hover:text-white transition">PROFILE</a>
+              <a href="#about" className="hover:text-white transition">{t.profile.label}</a>
             </div>
             <div className="text-xs uppercase tracking-widest text-red-400 font-semibold flex items-center gap-2 font-mono">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-              PROJECT
+              {t.projects.label}
             </div>
             <div className="flex gap-6 text-xs uppercase tracking-widest text-[#8A8F96] font-mono">
-              <a href="#contact" className="hover:text-white transition">CONTACT PERSON</a>
+              <a href="#contact" className="hover:text-white transition">{t.projects.contactTab}</a>
             </div>
           </div>
 
           {/* Header */}
           <div className="relative z-10 flex justify-between items-baseline px-6 md:px-12 pt-8 pb-4">
-            <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight font-mono">RECAP PROJECT 2025</h2>
-            <span className="text-xs uppercase tracking-widest text-red-400 font-mono bg-red-950/50 px-2.5 py-1 rounded border border-red-800/50">NO. 01</span>
+            <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight font-mono">{t.projects.recap}</h2>
+            <span className="text-xs uppercase tracking-widest text-red-400 font-mono bg-red-950/50 px-2.5 py-1 rounded border border-red-800/50">Nº 01</span>
           </div>
 
           {/* Giant ghost text */}
           <div className="absolute inset-x-0 top-[16%] flex items-center justify-center pointer-events-none select-none z-[2]">
-            <span className="font-mono font-black uppercase text-[clamp(70px,24vw,340px)] leading-none text-white/[0.06] tracking-[-0.02em] whitespace-nowrap">PORTFOLIO</span>
+            <span className="font-mono font-black uppercase text-[clamp(70px,24vw,340px)] leading-none text-white/[0.06] tracking-[-0.02em] whitespace-nowrap">{t.projects.ghost}</span>
           </div>
 
-          {/* Carousel */}
-          <div className="relative h-[62vh] md:h-[72vh] z-[30]">
+          {/* Carousel — Desktop 3D */}
+          <div className="hidden md:block relative h-[72vh] z-[30]">
             {projects.map((proj, idx) => {
               const role = getRole(idx);
               if (role === 'hidden') return null;
@@ -624,6 +663,66 @@ export default function PortfolioApp() {
             })}
           </div>
 
+          {/* Carousel — Mobile swipe (touch only, no autoplay) */}
+          <div className="md:hidden relative z-[30] select-none">
+            <div
+              ref={mobileTrackRef}
+              onScroll={handleMobileScroll}
+              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-5 px-6 pt-4 pb-2"
+              style={{ WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain", touchAction: "pan-x pan-y" }}
+            >
+              {projects.map((proj, idx) => (
+                <button
+                  key={proj.id}
+                  onClick={() => setActiveModalProject(proj)}
+                  aria-label={`${t.projects.tapToPlay} — ${proj.title}`}
+                  className="relative shrink-0 snap-center w-[64vw] max-w-[300px] aspect-[9/16] rounded-2xl overflow-hidden border border-red-500/25 bg-[#111827] shadow-[0_20px_80px_rgba(0,0,0,0.6)] cursor-pointer touch-auto"
+                >
+                  <img
+                    src={proj.thumbnail}
+                    alt={proj.title}
+                    draggable={false}
+                    className="absolute inset-0 w-full h-full object-cover object-center brightness-95 pointer-events-none"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050608]/95 via-transparent to-transparent pointer-events-none"></div>
+
+                  {/* Play badge */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="w-14 h-14 rounded-full border border-red-500/40 bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+                      <Play size={24} fill="currentColor" className="ml-0.5" />
+                    </span>
+                  </div>
+
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-left pointer-events-none">
+                    <span className="text-[10px] font-mono text-red-400 tracking-widest font-bold">{proj.category}</span>
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight font-mono mt-1">{proj.title}</h3>
+                    <span className="text-[9px] font-mono text-[#8A8F96] tracking-widest mt-2 inline-block">{t.projects.tapToPlay}</span>
+                  </div>
+
+                  <span className="absolute top-3 left-3 text-[9px] font-mono text-white/60 tracking-widest pointer-events-none">{proj.id}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Swipe hints + dots */}
+            <div className="flex items-center justify-between px-6 pt-3 pb-4">
+              <span className="text-[9px] font-mono text-[#8A8F96]/70 tracking-widest flex items-center gap-1.5">
+                <ArrowLeft size={12} /> {t.projects.swipeHint} <ArrowRight size={12} />
+              </span>
+              <div className="flex gap-1.5">
+                {projects.map((p, i) => (
+                  <span
+                    key={p.id}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? "w-6 bg-red-500" : "w-1.5 bg-white/25"}`}
+                  />
+                ))}
+              </div>
+              <span className="text-[9px] font-mono text-[#8A8F96]/70 tracking-widest">
+                {String(currentIndex + 1).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+
           {/* Bottom controls */}
           <div className="relative z-[60] flex flex-wrap items-end justify-between gap-8 px-6 md:px-12 pb-10 mt-4">
             {/* Left: text + nav */}
@@ -637,14 +736,14 @@ export default function PortfolioApp() {
               <div className="flex gap-4">
                 <button 
                   onClick={() => goToProject(-1)}
-                  aria-label="Projeto anterior"
+                  aria-label={t.projects.prevAria}
                   className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-white border-2 border-white/25 bg-transparent hover:scale-110 hover:bg-white/10 transition-transform duration-150 transition-colors duration-150"
                 >
                   <ArrowLeft size={26} strokeWidth={2.25} />
                 </button>
                 <button 
                   onClick={() => goToProject(1)}
-                  aria-label="Próximo projeto"
+                  aria-label={t.projects.nextAria}
                   className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-white border-2 border-white/25 bg-transparent hover:scale-110 hover:bg-white/10 transition-transform duration-150 transition-colors duration-150"
                 >
                   <ArrowRight size={26} strokeWidth={2.25} />
@@ -661,7 +760,7 @@ export default function PortfolioApp() {
                 onClick={() => setActiveModalProject(projects[currentIndex])}
                 className="flex items-center gap-3 font-mono uppercase text-white/95 hover:text-white transition-opacity duration-200 group"
               >
-                <span className="text-2xl md:text-4xl font-black tracking-tight">WATCH PROJECT</span>
+                <span className="text-2xl md:text-4xl font-black tracking-tight">{t.projects.watchProject}</span>
                 <ArrowRight className="w-5 h-5 md:w-7 md:h-7 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.25} />
               </button>
             </div>
@@ -687,19 +786,19 @@ export default function PortfolioApp() {
           {/* Top horizontal mini tabs */}
           <div className="flex justify-between items-center mb-10 border-b border-[#1e293b]/50 pb-4">
             <div className="flex gap-6 text-xs uppercase tracking-widest text-[#8A8F96] font-mono">
-              <a href="#about" className="hover:text-white transition">PROFILE</a>
-              <a href="#projects" className="hover:text-white transition">PROJECT</a>
+              <a href="#about" className="hover:text-white transition">{t.profile.label}</a>
+              <a href="#projects" className="hover:text-white transition">{t.projects.label}</a>
             </div>
             <div className="text-xs uppercase tracking-widest text-red-400 font-semibold flex items-center gap-2 font-mono">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-              CONTACT PERSON
+              {t.contact.label}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             {/* Left Side: Circular Portrait & Socials */}
             <div className="md:col-span-6 flex flex-col gap-6">
-              <h3 className="text-xl font-black uppercase tracking-wider font-mono">CONTACT ME</h3>
+              <h3 className="text-xl font-black uppercase tracking-wider font-mono">{t.contact.contactMe}</h3>
               
               <div className="flex items-center gap-6">
                 <motion.div 
@@ -714,30 +813,57 @@ export default function PortfolioApp() {
                 </motion.div>
                 <div>
                   <p className="text-sm font-bold text-white uppercase font-mono tracking-wider">PAULO SILVA</p>
-                  <p className="text-xs text-[#8A8F96] font-mono">VIDEO MAKER / EDITOR</p>
+                  <p className="text-xs text-[#8A8F96] font-mono">{t.contact.role}</p>
                 </div>
               </div>
 
-              {/* Social links */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                {[
-                  { icon: <InstagramIcon size={16} className="text-pink-500" />, label: '@paulo_vs.7', href: 'https://www.instagram.com/paulo_vs.7/' },
-                  { icon: <Share2 size={16} className="text-white" />, label: '@paulosilva', href: 'https://tiktok.com' },
-                  { icon: <Video size={16} className="text-red-500" />, label: 'PAULO FILMS', href: 'https://youtube.com' },
-                  { icon: <ExternalLink size={16} className="text-red-500" />, label: 'BEHANCE', href: 'https://behance.net' },
-                ].map((soc, idx) => (
-                  <motion.a 
-                    key={idx}
-                    href={soc.href} 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    whileHover={{ scale: 1.03, borderColor: "#ef4444", backgroundColor: "#111827" }}
-                    className="flex items-center gap-3 bg-[#0d131f] border border-[#1e293b] p-3 rounded-xl transition text-xs font-mono shadow-md"
-                  >
-                    {soc.icon}
-                    <span className="truncate">{soc.label}</span>
-                  </motion.a>
-                ))}
+              {/* Social links — Instagram + WhatsApp: dedicated icon zone + editorial hierarchy */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <motion.a 
+                  href="https://www.instagram.com/pvieira.videos" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  whileHover={{ scale: 1.02, borderColor: "#ef4444", backgroundColor: "#111827" }}
+                  className="group relative flex items-center gap-4 rounded-xl border border-[#1e293b] bg-[#0d131f] p-4 md:p-5 shadow-md transition-shadow hover:shadow-[0_0_35px_rgba(239,68,68,0.14)]"
+                >
+                  {/* Top hairline accent (editorial detail) */}
+                  <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                  {/* Dedicated icon zone */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#2a3346] bg-[#080B0F] text-pink-500 shadow-inner transition-colors duration-300 group-hover:border-pink-500/50">
+                    <InstagramIcon size={20} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex min-w-0 flex-1 flex-col justify-center">
+                    <span className="font-mono text-sm md:text-base font-bold tracking-wider text-white">INSTAGRAM</span>
+                  </div>
+
+                  <ArrowUpRight size={16} className="shrink-0 text-red-400 opacity-0 -translate-x-1 translate-y-1 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
+                </motion.a>
+
+                <motion.a 
+                  href="https://wa.me/5512983160115" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  whileHover={{ scale: 1.02, borderColor: "#25D366", backgroundColor: "#111827" }}
+                  className="group relative flex items-center gap-4 rounded-xl border border-[#1e293b] bg-[#0d131f] p-4 md:p-5 shadow-md transition-shadow hover:shadow-[0_0_35px_rgba(37,211,102,0.14)]"
+                >
+                  {/* Top hairline accent (editorial detail) */}
+                  <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[#25D366]/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                  {/* Dedicated icon zone */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#2a3346] bg-[#080B0F] text-[#25D366] shadow-inner transition-colors duration-300 group-hover:border-[#25D366]/50">
+                    <WhatsAppIcon size={20} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex min-w-0 flex-1 flex-col justify-center">
+                    <span className="font-mono text-sm md:text-base font-bold tracking-wider text-white">WHATSAPP</span>
+                  </div>
+
+                  <ArrowUpRight size={16} className="shrink-0 text-[#25D366] opacity-0 -translate-x-1 translate-y-1 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
+                </motion.a>
               </div>
             </div>
 
@@ -748,17 +874,19 @@ export default function PortfolioApp() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white font-mono bg-gradient-to-r from-white via-gray-300 to-red-500 bg-clip-text text-transparent"
               >
-                THANK YOU
+                {t.contact.thankYou}
               </motion.h2>
               <span className="text-2xl font-bold text-red-400 font-mono mt-2">2025</span>
               
               <motion.a 
-                href="mailto:contact@paulosilva.com"
-                whileHover={{ scale: 1.06, backgroundColor: "#dc2626", boxShadow: "0 0 25px rgba(239,68,68,0.6)" }}
+                href="https://wa.me/5512983160115?text=Ol%C3%A1%20Paulo%2C%20vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20projeto."
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.06, backgroundColor: "#dc2626", boxShadow: "0 0 25px rgba(220,38,38,0.5)" }}
                 whileTap={{ scale: 0.96 }}
                 className="mt-6 inline-block bg-red-600 text-white font-mono text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl transition shadow-lg shadow-red-900/50 flex items-center gap-2 font-bold"
               >
-                <span>LET'S WORK TOGETHER</span>
+                <span>{t.contact.letsWork}</span>
                 <ArrowUpRight size={16} />
               </motion.a>
             </div>
@@ -774,18 +902,21 @@ export default function PortfolioApp() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setActiveModalProject(null)}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 cursor-pointer"
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full max-w-4xl bg-[#080B0F] border border-red-500/30 rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-4xl bg-[#080B0F] border border-red-500/30 rounded-2xl overflow-hidden shadow-2xl cursor-default"
             >
               <motion.button 
                 whileHover={{ scale: 1.1, backgroundColor: "#dc2626" }}
                 onClick={() => setActiveModalProject(null)}
+                aria-label={t.modal.closeAria}
                 className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center transition shadow-lg"
               >
                 <X size={20} />
@@ -810,7 +941,7 @@ export default function PortfolioApp() {
                   </div>
 
                   <div className="pt-6 border-t border-[#1e293b]/50 mt-6">
-                    <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">PROJECT ID: {activeModalProject.id} / 2025</div>
+                    <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{t.modal.projectId} {activeModalProject.id} / 2025</div>
                   </div>
                 </div>
               </div>

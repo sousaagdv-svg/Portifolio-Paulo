@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "./components/LanguageProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PAULO SILVA — PORTFOLIO 2025 | Video Maker & Editor",
-  description: "Professional portfolio of Paulo Silva, Video Editor & Content Creator specializing in visual storytelling, cinematic editing, and digital content.",
+  title: "PAULO SILVA — PORTFÓLIO 2025 | Videomaker & Editor",
+  description: "Portfólio profissional de Paulo Silva, videomaker e editor de conteúdo especializado em narrativa visual, edição cinematográfica e conteúdo digital.",
 };
 
 export default function RootLayout({
@@ -27,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050608] text-[#F2F2F2] selection:bg-blue-600 selection:text-white`}
       >
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );
