@@ -484,7 +484,7 @@ export default function PortfolioApp() {
             <p className="text-xs text-red-400 font-mono">{t.profile.toolStackMobileHint}</p>
           </div>
           <div 
-            className="relative w-[280px] h-[180px] mx-auto cursor-pointer select-none group"
+            className="relative w-full max-w-[280px] h-[180px] mx-auto cursor-pointer select-none group"
             style={{ perspective: "1000px" }}
             onClick={handleRotateToolCards}
             title={t.profile.clickToRotate}
@@ -592,7 +592,7 @@ export default function PortfolioApp() {
           ></div>
 
           {/* Top mini tabs */}
-          <div className="relative z-10 flex justify-between items-center border-b border-[#1e293b]/50 px-6 md:px-12 pt-6 pb-4">
+          <div className="relative z-10 flex flex-wrap justify-between items-center gap-3 border-b border-[#1e293b]/50 px-6 md:px-12 pt-6 pb-4">
             <div className="flex gap-6 text-xs uppercase tracking-widest text-[#8A8F96] font-mono">
               <a href="#about" className="hover:text-white transition">{t.profile.label}</a>
             </div>
@@ -606,7 +606,7 @@ export default function PortfolioApp() {
           </div>
 
           {/* Header */}
-          <div className="relative z-10 flex justify-between items-baseline px-6 md:px-12 pt-8 pb-4">
+          <div className="relative z-10 flex flex-wrap justify-between items-baseline gap-2 px-6 md:px-12 pt-8 pb-4">
             <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight font-mono">{t.projects.recap}</h2>
             <span className="text-xs uppercase tracking-widest text-red-400 font-mono bg-red-950/50 px-2.5 py-1 rounded border border-red-800/50">Nº 01</span>
           </div>
@@ -643,7 +643,7 @@ export default function PortfolioApp() {
                   transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
                   style={{ ...pos, position: "absolute", transformOrigin: "center center", willChange: "transform, filter, opacity", aspectRatio: "0.6/1" }}
                   className="cursor-pointer"
-                  onClick={() => role === 'center' && setActiveModalProject(proj)}
+                  onClick={() => setActiveModalProject(proj)}
                 >
                   <div className="w-full h-full rounded-2xl overflow-hidden border border-red-500/25 bg-[#111827] shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
                     <img
@@ -668,7 +668,7 @@ export default function PortfolioApp() {
             <div
               ref={mobileTrackRef}
               onScroll={handleMobileScroll}
-              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-5 px-6 pt-4 pb-2"
+                            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 px-4 pt-4 pb-2 w-full"
               style={{ WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain", touchAction: "pan-x pan-y" }}
             >
               {projects.map((proj, idx) => (
@@ -676,7 +676,7 @@ export default function PortfolioApp() {
                   key={proj.id}
                   onClick={() => setActiveModalProject(proj)}
                   aria-label={`${t.projects.tapToPlay} — ${proj.title}`}
-                  className="relative shrink-0 snap-center w-[64vw] max-w-[300px] aspect-[9/16] rounded-2xl overflow-hidden border border-red-500/25 bg-[#111827] shadow-[0_20px_80px_rgba(0,0,0,0.6)] cursor-pointer touch-auto"
+                                    className="relative shrink-0 snap-center w-[85vw] max-w-[320px] aspect-[9/16] rounded-2xl overflow-hidden border border-red-500/25 bg-[#111827] shadow-xl cursor-pointer touch-auto"
                 >
                   <img
                     src={proj.thumbnail}
@@ -705,7 +705,7 @@ export default function PortfolioApp() {
             </div>
 
             {/* Swipe hints + dots */}
-            <div className="flex items-center justify-between px-6 pt-3 pb-4">
+            <div className="flex items-center justify-between px-4 pt-3 pb-4">
               <span className="text-[9px] font-mono text-[#8A8F96]/70 tracking-widest flex items-center gap-1.5">
                 <ArrowLeft size={12} /> {t.projects.swipeHint} <ArrowRight size={12} />
               </span>
@@ -911,26 +911,31 @@ export default function PortfolioApp() {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-4xl bg-[#080B0F] border border-red-500/30 rounded-2xl overflow-hidden shadow-2xl cursor-default"
+              className="relative w-full max-w-4xl bg-[#080B0F] border border-red-500/30 rounded-2xl shadow-2xl cursor-default max-h-[94vh] overflow-y-auto overscroll-contain md:overflow-hidden"
             >
-              <motion.button 
-                whileHover={{ scale: 1.1, backgroundColor: "#dc2626" }}
+              <button 
                 onClick={() => setActiveModalProject(null)}
                 aria-label={t.modal.closeAria}
-                className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center transition shadow-lg"
+                className="absolute top-3 right-3 z-50 flex items-center gap-1.5 rounded-full bg-black/70 border border-white/15 px-3.5 py-2 text-white font-mono text-xs uppercase tracking-widest backdrop-blur-sm hover:bg-red-600 hover:border-red-500 transition-colors cursor-pointer shadow-lg"
               >
-                <X size={20} />
-              </motion.button>
+                <X size={18} />
+                <span>{t.modal.closeLabel}</span>
+              </button>
 
               <div className="grid grid-cols-1 md:grid-cols-12">
-                <div className="md:col-span-5 bg-black flex items-center justify-center relative py-6 md:py-0">
-                  <video 
-                    src={activeModalProject.videoUrl} 
-                    controls 
-                    autoPlay 
-                    playsInline
-                    className="w-full max-w-[340px] aspect-[9/16] max-h-[78vh] object-contain bg-black rounded-xl"
-                  ></video>
+                <div className="md:col-span-5 bg-black flex items-center justify-center relative py-4 md:py-0">
+                  <div
+                    className="relative w-full aspect-[9/16] mx-auto bg-black rounded-xl overflow-hidden"
+                    style={{ maxWidth: "min(100%, calc(70vh * 0.5625))" }}
+                  >
+                    <video 
+                      src={activeModalProject.videoUrl} 
+                      controls 
+                      autoPlay 
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
 
                 <div className="md:col-span-7 p-6 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#1e293b] bg-[#080B0F]/90">

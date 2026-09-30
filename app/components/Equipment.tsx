@@ -272,10 +272,10 @@ export function EquipmentSection() {
         </motion.div>
 
         <div
-          className="relative w-full h-[820px] md:h-[680px]"
+          className="relative w-full h-auto min-h-[500px] md:h-[680px]"
           style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
         >
-          <div className="absolute inset-0 pointer-events-none opacity-[0.4]">
+          <div className="hidden md:block absolute inset-0 pointer-events-none opacity-[0.4]">
             <div className="absolute top-0 bottom-0 left-[25%] w-px bg-gradient-to-b from-transparent via-[#1e293b]/60 to-transparent" />
             <div className="absolute top-0 bottom-0 left-[75%] w-px bg-gradient-to-b from-transparent via-[#1e293b]/60 to-transparent" />
             <div className="absolute left-0 right-0 top-[16%] h-px bg-gradient-to-r from-transparent via-[#1e293b]/50 to-transparent" />
@@ -283,7 +283,7 @@ export function EquipmentSection() {
             <div className="absolute left-0 right-0 top-[84%] h-px bg-gradient-to-r from-transparent via-[#1e293b]/50 to-transparent" />
           </div>
 
-          <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+          <div className="hidden md:block absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
             {isHydrated && items.map((item, idx) => (
               <EquipmentCard
                 key={item.id}
@@ -296,12 +296,41 @@ export function EquipmentSection() {
             ))}
           </div>
 
+          {/* Mobile fluid grid — no absolute positioning, no viewport overflow */}
+          <div className="md:hidden flex flex-col gap-5 pt-2 pb-4">
+            {items.map((item, idx) => (
+              <div key={item.id} className="rounded-xl border border-[#1e293b]/70 bg-[#080B0F]/95 p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[9px] font-mono text-[#8A8F96] tracking-widest">{`${String(idx + 1).padStart(2, "0")}`}</span>
+                  <span className="flex-1 h-px bg-gradient-to-r from-[#1e293b]/80 to-transparent" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500/70" />
+                </div>
+                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-red-500/20 bg-[#06080d] p-2.5 flex items-center justify-center">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      loading="lazy"
+                      draggable={false}
+                      className="w-full h-full object-contain object-center"
+                    />
+                  ) : (
+                    <Glyph id={item.id} className="text-white/90" />
+                  )}
+                </div>
+                <p className="mt-3 text-[9px] font-mono uppercase tracking-widest text-[#8A8F96]">{item.category}</p>
+                <h3 className="text-sm font-mono font-bold tracking-wider text-white mt-0.5 uppercase">{item.name}</h3>
+                <p className="pt-2 mt-2 border-t border-[#1e293b]/40 text-[9px] font-mono uppercase tracking-[0.18em] text-red-400/90">{item.description}</p>
+              </div>
+            ))}
+          </div>
+
           <motion.div
             initial={isHydrated ? { opacity: 0 } : false}
             whileInView={isHydrated ? { opacity: 1 } : undefined}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="absolute bottom-0 inset-x-0 flex items-center justify-between text-[9px] font-mono uppercase tracking-[0.22em] text-[#8A8F96]/50"
+            className="hidden md:flex absolute bottom-0 inset-x-0 items-center justify-between text-[9px] font-mono uppercase tracking-[0.22em] text-[#8A8F96]/50"
           >
             <span>{t.equipment.footer}</span>
             <span className="hidden md:block">{t.equipment.footerRight}</span>
