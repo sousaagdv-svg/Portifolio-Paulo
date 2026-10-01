@@ -42,3 +42,12 @@ next-env.d.ts
 
 # Videos hospedados externamente
 /public/videos/*.mp4
+
+# Local Netlify folder
+.netlify
+
+videos-backup/
+.netlify/
+
+videos-backup/
+.netlify/
