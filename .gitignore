@@ -41,7 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # Videos hospedados externamente
-/public/videos/*.mp4
 
 # Local Netlify folder
 .netlify
