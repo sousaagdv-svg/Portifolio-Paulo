@@ -931,7 +931,8 @@ export default function PortfolioApp() {
                     <video 
                       src={activeModalProject.videoUrl} 
                       controls 
-                      autoPlay 
+                      autoPlay
+                      preload="none" 
                       playsInline
                       className="absolute inset-0 w-full h-full object-contain"
                     />
